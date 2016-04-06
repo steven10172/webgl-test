@@ -1,0 +1,210 @@
+/* ========================================================================
+   Component: preloader.less
+ ========================================================================== */
+
+@preloader-bg:  #000000;
+@tcs-blue: @brand-primary;
+@tcs-white: #FFFFFF;
+
+@unit: vw;
+
+@size: 2;
+@size-portrait: 8;
+@box-size: @size;
+@box-size-portrait: @size-portrait;
+@box-size-units: unit(@box-size, @unit);
+@box-size-units-portrait: unit(@box-size-portrait, @unit);
+
+@box-border: @size / 6;
+@box-border-portrait: @size-portrait / 6;
+@box-border-units: unit(@box-border, @unit);
+@box-border-units-portrait: unit(@box-border-portrait, @unit);
+
+@box-border-radius: @size / 4;
+@box-border-radius-portrait: @size-portrait / 4;
+@box-border-radius-units: unit(@box-border-radius, @unit);
+@box-border-radius-units-portrait: unit(@box-border-radius-portrait, @unit);
+
+@margin: max(@size / 15, 0.1);
+@margin-portrait: max(@size-portrait / 15, 0.1);
+
+/** z is blank space */
+@row1: z, w1, b1;
+@row2: w2, b2, w3, w4;
+@row3: w5, z, z, b3;
+
+.row(@rowValues, @rowNum) {
+  .loop(@i: length(@rowValues)) when (@i > 0) {
+    @name: extract(@rowValues, @i);
+    &#@{name} {
+      left: unit((@size + @margin + 0.1) * (@i - 1), @unit);
+      top: unit((@size + @margin + 0.1) * (@rowNum - 1), @unit);
+      -webkit-animation-name: falling-box;
+      -webkit-animation-duration: 4s;
+      -webkit-animation-timing-function: ease-out;
+      -webkit-animation-iteration-count: infinite;
+      -webkit-transform: scale(0,0);
+
+    }
+    .loop((@i - 1));
+  }
+  .loop;
+}
+
+.row-portrait(@rowValues, @rowNum) {
+  .loop(@i: length(@rowValues)) when (@i > 0) {
+    @name: extract(@rowValues, @i);
+    &#@{name} {
+      left: unit((@size-portrait + @margin-portrait + 0.1) * (@i - 1), @unit);
+      top: unit((@size-portrait + @margin-portrait + 0.1) * (@rowNum - 1), @unit);
+      -webkit-animation-name: falling-box;
+      -webkit-animation-duration: 4s;
+      -webkit-animation-timing-function: ease-out;
+      -webkit-animation-iteration-count: infinite;
+      -webkit-transform: scale(0,0);
+
+    }
+    .loop((@i - 1));
+  }
+  .loop;
+}
+
+.keyframes(@name; @arguments) {
+  @-moz-keyframes @name { @arguments(); }
+  @-webkit-keyframes @name { @arguments(); }
+  @keyframes @name { @arguments(); }
+}
+
+.animation(@arguments) {
+  -webkit-animation: @arguments;
+  -moz-animation: @arguments;
+  animation: @arguments;
+}
+
+.keyframes(falling-box, {
+  0% {
+    -webkit-transform: scale(0,0);
+  }
+  1% {
+    -webkit-transform: scale(1.16,1.16);
+  }
+  2% {
+    -webkit-transform: scale(1,1);
+  }
+  59% {
+    -webkit-transform: scale(1,1);
+  }
+  60% {
+    -webkit-transform: scale(1.16,1.16);
+  }
+  61% {
+    -webkit-transform: scale(0,0);
+  }
+});
+
+.animation-delay(@childNum; @delay) {
+  & > :nth-child(@{childNum}) {
+    -webkit-animation-delay: @delay;
+    animation-delay: @delay;
+  }
+}
+
+
+/*@noflip*/
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color:  @preloader-bg;
+  z-index: 9999;
+  .transition(opacity .65s);
+}
+
+.preloader-hidden {
+  display: none; 
+}
+
+// ngAnimate behavior
+.preloader-hidden-add {
+  opacity: 1;
+  display: block;
+  .preloader-progress {
+    .transition-transform(.4s ease);
+    .scale(0);
+  }
+}
+.preloader-hidden-add-active {
+  opacity: 0;
+}
+
+
+div#preloader-container {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: unit((@size + (@box-border * 2) + @margin) * 4, @unit);
+  height: unit((@size + (@box-border * 2) + @margin) * 3, @unit);
+
+  @media screen and (orientation: portrait) {
+    width: unit((@size-portrait + (@box-border-portrait * 2) + @margin-portrait) * 3, @unit);
+    height: unit((@size-portrait + (@box-border-portrait * 2) + @margin-portrait) * 2.5, @unit);
+  }
+}
+
+div#tcs-logo-animated {
+  position: relative;
+  padding: 0;
+  margin: 0;
+
+  .animation-delay(1, 0s);
+  .animation-delay(8, 0.15s);
+  .animation-delay(3, 0.30s);
+  .animation-delay(5, 0.45s);
+  .animation-delay(7, 0.60s);
+  .animation-delay(2, 0.75s);
+  .animation-delay(4, 0.90s);
+  .animation-delay(6, 1.05s);
+
+  & > .square {
+    width: @box-size-units;
+    height: @box-size-units;
+    border: @box-border-units solid white;
+    border-radius: @box-border-radius-units;
+
+    @media screen and (orientation: portrait) {
+      width: @box-size-units-portrait;
+      height: @box-size-units-portrait;
+      border: @box-border-units-portrait solid white;
+      border-radius: @box-border-radius-units-portrait;
+    }
+
+    &.blue {
+      border-color: @tcs-blue;
+    }
+    &.white {
+      border-color: @tcs-white;
+    }
+  }
+
+  & > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    .row(@row1, 1);
+    .row(@row2, 2);
+    .row(@row3, 3);
+
+    @media screen and (orientation: portrait) {
+      .row-portrait(@row1, 1);
+      .row-portrait(@row2, 2);
+      .row-portrait(@row3, 3);
+    }
+
+  }
+}
